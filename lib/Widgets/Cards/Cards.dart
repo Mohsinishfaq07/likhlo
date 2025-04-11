@@ -273,6 +273,16 @@ class CustomerCard extends ConsumerWidget {
                     ),
                   ),
                   Text(
+                    'Product: ${customer.productName}',
+                    style: TextStyle(
+                      fontSize: 14,
+                      decoration:
+                          customer.isPaid ? TextDecoration.lineThrough : null,
+                      decorationColor: Colors.green,
+                      decorationThickness: 2,
+                    ),
+                  ),
+                  Text(
                     'Amount: Rs ${customer.amount.toStringAsFixed(2)}',
                     style: TextStyle(
                       fontSize: 16,

@@ -1,8 +1,18 @@
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:likhlo/Utils/Model/CustomerModel.dart';
+
 // search_provider.dart
+extension on Customer {
+  String statementRow() {
+    return 'Name: $name | Mobile: $mobile | Amount: $amount | Paid: ${isPaid ? "Yes" : "No"}';
+  }
+}
 
 final searchControllerProvider = StateProvider<String>((ref) => '');
 
@@ -88,6 +98,74 @@ class CustomerRepository {
     _ref.read(loadingProvider.notifier).setLoading(isLoading);
   }
 
+  Future<List<Customer>> getAllCustomersOnce() async {
+    final collection = _collection;
+    if (collection == null) return [];
+
+    final snapshot = await collection.get();
+    return snapshot.docs.map((doc) {
+      return Customer.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+    }).toList();
+  }
+
+  Future<Uint8List?> generateCustomerStatementImage() async {
+    final customers = await getAllCustomersOnce();
+
+    final recorder = ui.PictureRecorder();
+    final canvas = ui.Canvas(recorder);
+    const double width = 1080;
+    double yOffset = 40.0;
+
+    final paint = ui.Paint()..color = Colors.white;
+    final textPainter = TextPainter(textDirection: TextDirection.ltr);
+
+    // Background
+    canvas.drawRect(Rect.fromLTWH(0, 0, width, 2000), paint);
+
+    // Title
+    textPainter.text = TextSpan(
+      text: 'Customer Statement',
+      style: TextStyle(
+        fontSize: 36,
+        fontWeight: FontWeight.bold,
+        color: Colors.black,
+      ),
+    );
+    textPainter.layout(minWidth: 0, maxWidth: width);
+    textPainter.paint(canvas, Offset(20, yOffset));
+    yOffset += 60;
+
+    // Rows
+    for (final customer in customers) {
+      final line = customer.statementRow();
+
+      textPainter.text = TextSpan(
+        text: line,
+        style: TextStyle(fontSize: 28, color: Colors.black87),
+      );
+      textPainter.layout(minWidth: 0, maxWidth: width - 40);
+      textPainter.paint(canvas, Offset(20, yOffset));
+      yOffset += 40;
+    }
+
+    final picture = recorder.endRecording();
+    final image = await picture.toImage(width.toInt(), yOffset.toInt());
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    return byteData?.buffer.asUint8List();
+  }
+
+  // Future<String?> saveStatementToFile(Uint8List bytes) async {
+  //   try {
+  //     final directory = await getTemporaryDirectory();
+  //     final path = '${directory.path}/customer_statement.png';
+  //     final file = File(path);
+  //     await file.writeAsBytes(bytes);
+  //     return path;
+  //   } catch (e) {
+  //     print('Failed to save image: $e');
+  //     return null;
+  //   }
+  // }
   // Add a new customer
   Future<void> addCustomer(Customer customer) async {
     try {

@@ -169,6 +169,12 @@ class _AddSupplierScreenState extends ConsumerState<AddSupplierScreen> {
               ),
               const SizedBox(height: 16),
               CustomTextField(
+                label: 'Description',
+                controller: _descriptionController,
+                maxLines: 2,
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
                 label: 'Amount',
                 controller: _amountController,
                 keyboardType: TextInputType.number,
@@ -207,11 +213,7 @@ class _AddSupplierScreenState extends ConsumerState<AddSupplierScreen> {
                             : null,
               ),
               const SizedBox(height: 16),
-              CustomTextField(
-                label: 'Description',
-                controller: _descriptionController,
-                maxLines: 2,
-              ),
+
               const SizedBox(height: 16),
               CustomTextField(
                 label: 'Note',
