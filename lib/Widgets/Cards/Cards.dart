@@ -32,7 +32,6 @@ class SupplierCard extends ConsumerWidget {
         child: Column(
           children: [
             ListTile(
-              leading: CircleName(label: supplier.name),
               onTap: () {
                 Get.to(EditSupplierScreen(supplier: supplier));
               },
@@ -220,30 +219,6 @@ class SupplierCard extends ConsumerWidget {
   }
 }
 
-class CircleName extends StatelessWidget {
-  final String label;
-
-  const CircleName({super.key, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min, // Prevents expanding
-      mainAxisAlignment: MainAxisAlignment.start, // Align to top
-      children: [
-        CircleAvatar(
-          backgroundColor: Colors.blue,
-          radius: 20,
-          child: Text(
-            label.isNotEmpty ? label[0].toUpperCase() : '',
-            style: const TextStyle(color: Colors.white),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class CustomerCard extends ConsumerWidget {
   final Customer customer;
 
@@ -269,7 +244,6 @@ class CustomerCard extends ConsumerWidget {
         child: Column(
           children: [
             ListTile(
-              leading: CircleName(label: customer.name),
               onTap: () {
                 Get.to(EditCustomerScreen(customer: customer));
               },
