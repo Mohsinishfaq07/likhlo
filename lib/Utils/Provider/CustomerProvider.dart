@@ -17,9 +17,9 @@ final customersCollectionProvider = Provider<CollectionReference?>((ref) {
   if (userEmail == null) return null;
 
   return FirebaseFirestore.instance
-      .collection(userEmail)
-      .doc('Customers')
-      .collection('data');
+      .collection('users')
+      .doc(userEmail)
+      .collection('Customers');
 });
 
 // Stream provider for all customers
