@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1001181318224",
+    "project_id": "likhlo-1334d",
+    "storage_bucket": "likhlo-1334d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1001181318224:android:38b2bfd03f02ea55745555",
+        "android_client_info": {
+          "package_name": "com.example.likhlo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrq6qorv7W8PI0_qpQUKLdkMQ-9RinHrI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
