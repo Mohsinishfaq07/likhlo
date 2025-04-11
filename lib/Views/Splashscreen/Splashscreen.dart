@@ -33,10 +33,7 @@ class _SplashscreenState extends State<Splashscreen> {
               width: 200,
             ),
             Gap(20),
-            Text(
-              "Udhaar Book",
-              style: AppStyle(25, FontWeight.bold, Colors.white),
-            ),
+            Text("Likhlo", style: AppStyle(25, FontWeight.bold, Colors.white)),
             Gap(60),
             CircularProgressIndicator(color: Colors.orange),
           ],
