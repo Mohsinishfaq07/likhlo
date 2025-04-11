@@ -1,21 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:likhlo/Utils/Model/Profilemodel.dart';
+import 'package:likhlo/Utils/Provider/ProfileProvider.dart';
 import 'package:likhlo/Utils/Service/AuthService.dart';
 import 'package:likhlo/Views/Auth/Login/LoginScreen.dart';
+import 'package:likhlo/Views/Home/home.dart';
 import 'package:likhlo/Widgets/Button/CustomButton.dart';
 import 'package:likhlo/Widgets/Inpufield/AuthField.dart';
 
-class SignupScreen extends StatefulWidget {
+class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  ConsumerState<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _SignupScreenState extends ConsumerState<SignupScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final confirmpasswordcontroller = TextEditingController();
+  final firstnamecontroller = TextEditingController();
+  final lastnamecontroller = TextEditingController();
+  final mobilenumbercontroller = TextEditingController();
   final _authService = AuthService();
   bool _isLoading = false;
   bool _isPasswordVisible = false; // To toggle password visibility
@@ -42,10 +50,24 @@ class _SignupScreenState extends State<SignupScreen> {
       );
 
       if (mounted) {
+        final profileRepository = ref.read(userProfileRepositoryProvider);
+        final profile = ProfileModel(
+          name:
+              '${firstnamecontroller.text.trim()} ${lastnamecontroller.text.trim()}',
+          email: _emailController.text.trim(),
+          mobileNumber: mobilenumbercontroller.text.trim(),
+          gender: '', // You might want to add a gender selection field
+        );
+        profileRepository.addOrUpdateProfile(profile);
         await _authService.login(
           _emailController.text.trim(),
           _passwordController.text.trim(),
         );
+
+        setState(() {
+          _isLoading = false;
+        });
+        Get.offAll(Homescreen());
       }
     } catch (e) {
       if (mounted) {
@@ -94,8 +116,47 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
+                        CustomTextField(
+                          controller: firstnamecontroller,
+                          label: "First Name",
+                          icon: Icons.abc,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter First Name';
+                            }
 
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        CustomTextField(
+                          controller: lastnamecontroller,
+                          label: "Last Name",
+                          icon: Icons.abc,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please Last Name';
+                            }
+
+                            return null;
+                          },
+                        ),
                         // Email Field using CustomTextField
+                        const SizedBox(height: 20),
+                        CustomTextField(
+                          controller: mobilenumbercontroller,
+                          label: "Mobile Number",
+                          icon: Icons.phone,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter Mobile Number';
+                            }
+
+                            return null;
+                          },
+                        ),
+                        // Email Field using CustomTextField
+                        const SizedBox(height: 20),
                         CustomTextField(
                           controller: _emailController,
                           label: "Email",
@@ -119,6 +180,39 @@ class _SignupScreenState extends State<SignupScreen> {
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter password';
+                            }
+                            if (value != confirmpasswordcontroller.text) {
+                              return 'Passwords Dont Match';
+                            }
+                            if (value.length < 6) {
+                              return 'Password must be at least 6 characters';
+                            }
+                            return null;
+                          },
+                          suffixIcon: Icon(
+                            _isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Colors.blue.shade700,
+                          ),
+                          onSuffixIconPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 15),
+                        CustomTextField(
+                          controller: confirmpasswordcontroller,
+                          label: "Confirm Password",
+                          icon: Icons.lock,
+                          obscureText: !_isPasswordVisible,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please Confirm password';
+                            }
+                            if (value != _passwordController.text) {
+                              return 'Passwords Dont Match';
                             }
                             if (value.length < 6) {
                               return 'Password must be at least 6 characters';

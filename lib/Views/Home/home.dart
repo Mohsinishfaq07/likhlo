@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:likhlo/Views/Data/Dashboard/Dashboard.dart';
-import 'package:likhlo/Views/Data/Dashboard/InventoryDashboard.dart';
 import 'package:likhlo/Views/Data/Dashboard/SuppDashboard.dart';
+import 'package:likhlo/Views/Profile/Profile.dart';
 
 class Homescreen extends StatefulWidget {
   const Homescreen({super.key});
@@ -18,8 +18,8 @@ class _HomescreenState extends State<Homescreen> {
   final List<Widget> _screens = [
     DashboardScreen(), // Customers Screen
     SupplierDashboardScreen(),
-    InventoryDashboardScreen(),
-    const PlaceholderScreen(title: 'Profile'), // Profile Screen
+    const PlaceholderScreen(title: 'inventory'), // Profile Scr
+    ProfilePage(),
   ];
 
   // Function to handle navigation on bottom nav tap
