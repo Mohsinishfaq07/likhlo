@@ -154,11 +154,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 15),
                         LoginwithGoogle(_googleLogin),
-                        // const SizedBox(height: 15),
+                        const SizedBox(height: 15),
                         // CustomtextButton(
                         //   context,
-                        //   "📞 Login With Mobile Number ",
-                        //   () {},
+                        //   " Login With Mobile Number 📞 ",
+                        //   () {
+                        //     Get.to(Loginwithmobile());
+                        //   },
                         // ),
                         CustomtextButton(
                           context,

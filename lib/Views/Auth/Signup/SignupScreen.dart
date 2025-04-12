@@ -146,6 +146,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         CustomTextField(
                           controller: mobilenumbercontroller,
                           label: "Mobile Number",
+                          keyboardType: TextInputType.number,
                           icon: Icons.phone,
                           validator: (value) {
                             if (value == null || value.isEmpty) {

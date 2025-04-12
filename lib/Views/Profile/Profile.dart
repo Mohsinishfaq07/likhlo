@@ -1,10 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:likhlo/Utils/Model/Profilemodel.dart';
 import 'package:likhlo/Utils/Provider/ProfileProvider.dart';
 import 'package:likhlo/Utils/Service/AuthService.dart';
+import 'package:likhlo/Utils/Snackbar/Snackbar.dart';
+import 'package:likhlo/Utils/Textstyle/Textstyle.dart';
 import 'package:likhlo/Widgets/Button/CustomButton.dart';
 import 'package:likhlo/Widgets/Inpufield/Profilefields.dart';
 
@@ -62,14 +65,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         final profileRepository = ref.read(userProfileRepositoryProvider);
         final user = FirebaseAuth.instance.currentUser;
         final currentEmail = user?.email;
-
-        if (user == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Error: User not logged in.')),
-          );
-          return;
-        }
-
         final profile = ProfileModel(
           name: _nameController.text.trim(),
           email: currentEmail ?? '',
@@ -86,13 +81,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           setState(() {
             _isEditing = false;
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Profile updated successfully!')),
-          );
+
+          showSnackBar("Profile", "Profile Updated Successfully");
         } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to update profile: $e')),
-          );
+          showSnackBar("Profile", "An Error Has Occured");
         }
       }
     } else {
@@ -114,9 +106,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Profile"),
+        title: Text(
+          "Profile",
+          style: AppStyle(24, FontWeight.bold, Colors.white),
+        ),
         centerTitle: true,
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.blue.shade700,
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -130,6 +126,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           ),
         ],
       ),
+      backgroundColor: Colors.blue.shade50,
       body: profile.when(
         data: (profileData) {
           if (profileData != null) {
@@ -146,183 +143,240 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  ProfileFields(
-                    controller: _nameController,
-                    label: "Name",
-                    enabled: _isEditing,
-                    icon: Icons.person,
-                    validator: _isEditing ? _validateField : null,
-                  ),
-                  const SizedBox(height: 16),
-                  ProfileFields(
-                    controller: _emailController,
-                    label: "Email",
-                    enabled: false,
-                    icon: Icons.email,
-                  ),
-                  const SizedBox(height: 16),
-                  ProfileFields(
-                    controller: _mobileNumberController,
-                    label: "Mobile Number",
-                    enabled: _isEditing,
-                    icon: Icons.phone,
-                    keyboardType: TextInputType.phone,
-                    validator: _isEditing ? _validateField : null,
-                  ),
-                  const SizedBox(height: 16),
-                  InputDecorator(
-                    decoration: InputDecoration(
-                      labelText: 'Gender',
-                      labelStyle: GoogleFonts.poppins(
-                        color: Colors.grey.shade600,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade400),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue.shade700),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      disabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade400),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.redAccent),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                    ),
-                    child: DropdownButtonFormField<String>(
-                      value: _selectedGender,
-                      isExpanded: true,
-                      hint: Text(
-                        'Select Gender',
-                        style: GoogleFonts.poppins(color: Colors.grey.shade400),
-                      ),
-                      items:
-                          _genderOptions.map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value, style: GoogleFonts.poppins()),
-                            );
-                          }).toList(),
-                      onChanged:
-                          _isEditing
-                              ? (String? newValue) {
-                                setState(() {
-                                  _selectedGender = newValue;
-                                });
-                              }
-                              : null,
-                      validator:
-                          _isEditing
-                              ? (value) =>
-                                  value == null || value.isEmpty
-                                      ? 'Please select a gender'
-                                      : null
-                              : null,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  InkWell(
-                    onTap: () => _selectDate(context),
-                    child: InputDecorator(
-                      decoration: InputDecoration(
-                        labelText: 'Date of Birth',
-                        labelStyle: GoogleFonts.poppins(
-                          color: Colors.grey.shade600,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.grey.shade400),
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.blue.shade700),
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        disabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.grey.shade400),
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red),
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.redAccent),
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        suffixIcon: Icon(
-                          Icons.calendar_today,
-                          color: Colors.blue.shade700,
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 15.0),
+            child: Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Center(
                         child: Text(
-                          _selectedDateOfBirth != null
-                              ? "${_selectedDateOfBirth!.year}-${_selectedDateOfBirth!.month.toString().padLeft(2, '0')}-${_selectedDateOfBirth!.day.toString().padLeft(2, '0')}"
-                              : 'Select Date of Birth',
+                          "Your Profile",
                           style: GoogleFonts.poppins(
-                            color:
-                                _selectedDateOfBirth != null
-                                    ? Colors.black
-                                    : Colors.grey.shade400,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.blue.shade800,
                           ),
                         ),
                       ),
-                    ),
+                      Gap(20),
+                      Center(
+                        child: CircleAvatar(
+                          backgroundColor: Colors.blue,
+                          radius: 40,
+                          child: Text(
+                            _nameController.text.isNotEmpty
+                                ? _nameController.text[0].toUpperCase()
+                                : '',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 30,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Gap(20),
+                      const SizedBox(height: 20),
+                      ProfileFields(
+                        controller: _nameController,
+                        label: "Name",
+                        enabled: _isEditing,
+                        icon: Icons.person,
+                        validator: _isEditing ? _validateField : null,
+                      ),
+                      const SizedBox(height: 16),
+                      ProfileFields(
+                        controller: _emailController,
+                        label: "Email",
+                        enabled: false,
+                        icon: Icons.email,
+                      ),
+                      const SizedBox(height: 16),
+                      ProfileFields(
+                        controller: _mobileNumberController,
+                        label: "Mobile Number",
+                        enabled: _isEditing,
+                        icon: Icons.phone,
+                        keyboardType: TextInputType.phone,
+                        validator: _isEditing ? _validateField : null,
+                      ),
+                      const SizedBox(height: 16),
+                      InputDecorator(
+                        decoration: InputDecoration(
+                          labelText: 'Gender',
+                          labelStyle: GoogleFonts.poppins(
+                            color: Colors.grey.shade600,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey.shade400),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.blue.shade700),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          disabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey.shade400),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.red),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.redAccent),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                        child: DropdownButtonFormField<String>(
+                          value: _selectedGender,
+                          isExpanded: true,
+                          hint: Text(
+                            'Select Gender',
+                            style: GoogleFonts.poppins(
+                              color: Colors.grey.shade400,
+                            ),
+                          ),
+                          items:
+                              _genderOptions.map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(
+                                    value,
+                                    style: GoogleFonts.poppins(),
+                                  ),
+                                );
+                              }).toList(),
+                          onChanged:
+                              _isEditing
+                                  ? (String? newValue) {
+                                    setState(() {
+                                      _selectedGender = newValue;
+                                    });
+                                  }
+                                  : null,
+                          validator:
+                              _isEditing
+                                  ? (value) =>
+                                      value == null || value.isEmpty
+                                          ? 'Please select a gender'
+                                          : null
+                                  : null,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      InkWell(
+                        onTap: () => _selectDate(context),
+                        child: InputDecorator(
+                          decoration: InputDecoration(
+                            labelText: 'Date of Birth',
+                            labelStyle: GoogleFonts.poppins(
+                              color: Colors.grey.shade600,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade400,
+                              ),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.blue.shade700,
+                              ),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            disabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade400,
+                              ),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.red),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.redAccent),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            suffixIcon: Icon(
+                              Icons.calendar_today,
+                              color: Colors.blue.shade700,
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 15.0),
+                            child: Text(
+                              _selectedDateOfBirth != null
+                                  ? "${_selectedDateOfBirth!.year}-${_selectedDateOfBirth!.month.toString().padLeft(2, '0')}-${_selectedDateOfBirth!.day.toString().padLeft(2, '0')}"
+                                  : 'Select Date of Birth',
+                              style: GoogleFonts.poppins(
+                                color:
+                                    _selectedDateOfBirth != null
+                                        ? Colors.black
+                                        : Colors.grey.shade400,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ProfileFields(
+                        controller: _ageController,
+                        label: "Age",
+                        enabled: _isEditing,
+                        icon: Icons.numbers,
+                        keyboardType: TextInputType.number,
+                        validator: _isEditing ? _validateField : null,
+                      ),
+                      const SizedBox(height: 32),
+                      ActionButton(
+                        label: _isEditing ? "Save Profile" : "Edit Profile",
+                        isLoading: false,
+                        onPressed: () async {
+                          _saveProfile();
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      ActionButton(
+                        label: "Logout",
+                        isLoading: false,
+                        onPressed: () async {
+                          await authService.logout(context);
+                        },
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                  ProfileFields(
-                    controller: _ageController,
-                    label: "Age",
-                    enabled: _isEditing,
-                    icon: Icons.numbers,
-                    keyboardType: TextInputType.number,
-                    validator: _isEditing ? _validateField : null,
-                  ),
-                  const SizedBox(height: 32),
-                  ActionButton(
-                    label: "Save",
-                    isLoading: false,
-                    onPressed: () async {
-                      _saveProfile();
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  ActionButton(
-                    label: "Logout",
-                    isLoading: false,
-                    onPressed: () async {
-                      await authService.logout(context);
-                    },
-                  ),
-                ],
+                ),
               ),
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading:
+            () => const Center(
+              child: CircularProgressIndicator(color: Colors.blue),
+            ),
         error:
-            (error, stackTrace) =>
-                Center(child: Text('Error fetching profile: $error')),
+            (error, stackTrace) => Center(
+              child: Text(
+                'Error fetching profile: $error',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
       ),
     );
   }

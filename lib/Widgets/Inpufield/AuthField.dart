@@ -5,6 +5,7 @@ class CustomTextField extends StatelessWidget {
   final String label;
   final IconData icon;
   final bool obscureText;
+  final TextInputType? keyboardType; // Make keyboardType nullable
   final String? Function(String?)? validator;
   final Widget? suffixIcon;
   final Function()? onSuffixIconPressed;
@@ -14,6 +15,7 @@ class CustomTextField extends StatelessWidget {
     required this.label,
     required this.icon,
     this.obscureText = false,
+    this.keyboardType, // Initialize in the constructor
     this.validator,
     this.suffixIcon,
     this.onSuffixIconPressed,
@@ -25,6 +27,7 @@ class CustomTextField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       obscureText: obscureText,
+      keyboardType: keyboardType, // Use the provided keyboardType
       validator: validator,
       decoration: InputDecoration(
         labelText: label,
