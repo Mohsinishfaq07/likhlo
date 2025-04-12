@@ -2,19 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:likhlo/Utils/Provider/CustomerProvider.dart';
 import 'package:likhlo/Utils/Textstyle/Textstyle.dart';
-import 'package:likhlo/Views/Data/Add/AddCustomer.dart';
+import 'package:likhlo/Views/Data/Customer/Add/AddCustomer.dart';
 import 'package:likhlo/Widgets/Button/GivenorTakenButton.dart';
 import 'package:likhlo/Widgets/Cards/Cards.dart'; // Assuming a customer card widget exists
 import 'package:likhlo/Widgets/Searchbar/Searchbar.dart'; // Assuming the search bar widget is in this file
 
-class DashboardScreen extends ConsumerStatefulWidget {
-  const DashboardScreen({super.key});
+class CustomerDashboardScreen extends ConsumerStatefulWidget {
+  const CustomerDashboardScreen({super.key});
 
   @override
-  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
+  ConsumerState<CustomerDashboardScreen> createState() =>
+      _DashboardScreenState();
 }
 
-class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+class _DashboardScreenState extends ConsumerState<CustomerDashboardScreen> {
   final TextEditingController _searchController =
       TextEditingController(); // Controller for search bar
 

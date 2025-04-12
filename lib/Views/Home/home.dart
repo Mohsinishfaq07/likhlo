@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:likhlo/Views/Data/Dashboard/Dashboard.dart';
-import 'package:likhlo/Views/Data/Dashboard/SuppDashboard.dart';
+import 'package:likhlo/Views/Data/Customer/Dashboard/CustomerDashboard.dart';
+import 'package:likhlo/Views/Data/Inventory/Dashboard/InventoryDashboard.dart';
+import 'package:likhlo/Views/Data/Supplier/Dashbaord/SuppDashboard.dart';
 import 'package:likhlo/Views/Profile/Profile.dart';
 
 class Homescreen extends StatefulWidget {
@@ -16,9 +17,9 @@ class _HomescreenState extends State<Homescreen> {
 
   // List of screens to show in bottom navigation
   final List<Widget> _screens = [
-    DashboardScreen(), // Customers Screen
+    CustomerDashboardScreen(), // Customers Screen
     SupplierDashboardScreen(),
-    const PlaceholderScreen(title: 'inventory'), // Profile Scr
+    Inventorydashboard(),
     ProfilePage(),
   ];
 

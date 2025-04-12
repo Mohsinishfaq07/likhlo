@@ -81,7 +81,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           setState(() {
             _isEditing = false;
           });
-
           showSnackBar("Profile", "Profile Updated Successfully");
         } catch (e) {
           showSnackBar("Profile", "An Error Has Occured");
@@ -129,11 +128,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       backgroundColor: Colors.blue.shade50,
       body: profile.when(
         data: (profileData) {
+          // Initialize _selectedGender here within the data callback
+          if (profileData != null && _selectedGender == null) {
+            _selectedGender =
+                profileData.gender.isNotEmpty ? profileData.gender : null;
+          }
           if (profileData != null) {
             _nameController.text = profileData.name;
             _mobileNumberController.text = profileData.mobileNumber;
-            _selectedGender =
-                profileData.gender.isNotEmpty ? profileData.gender : null;
             _selectedDateOfBirth = profileData.dateOfBirth;
             _ageController.text = profileData.age?.toString() ?? '';
             _emailController.text = authService.currentUser!.email!;
@@ -170,12 +172,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       Center(
                         child: CircleAvatar(
                           backgroundColor: Colors.blue,
-                          radius: 40,
+                          radius: 45,
                           child: Text(
                             _nameController.text.isNotEmpty
                                 ? _nameController.text[0].toUpperCase()
                                 : '',
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 30,
@@ -209,72 +211,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                         validator: _isEditing ? _validateField : null,
                       ),
                       const SizedBox(height: 16),
-                      InputDecorator(
-                        decoration: InputDecoration(
-                          labelText: 'Gender',
-                          labelStyle: GoogleFonts.poppins(
-                            color: Colors.grey.shade600,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey.shade400),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue.shade700),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          disabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey.shade400),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.red),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.redAccent),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                        ),
-                        child: DropdownButtonFormField<String>(
-                          value: _selectedGender,
-                          isExpanded: true,
-                          hint: Text(
-                            'Select Gender',
-                            style: GoogleFonts.poppins(
-                              color: Colors.grey.shade400,
-                            ),
-                          ),
-                          items:
-                              _genderOptions.map((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(
-                                    value,
-                                    style: GoogleFonts.poppins(),
-                                  ),
-                                );
-                              }).toList(),
-                          onChanged:
-                              _isEditing
-                                  ? (String? newValue) {
-                                    setState(() {
-                                      _selectedGender = newValue;
-                                    });
-                                  }
-                                  : null,
-                          validator:
-                              _isEditing
-                                  ? (value) =>
-                                      value == null || value.isEmpty
-                                          ? 'Please select a gender'
-                                          : null
-                                  : null,
-                        ),
-                      ),
+                      Dropdown(),
                       const SizedBox(height: 16),
                       InkWell(
                         onTap: () => _selectDate(context),
@@ -306,11 +243,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                               borderRadius: BorderRadius.circular(10.0),
                             ),
                             errorBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.red),
+                              borderSide: const BorderSide(color: Colors.red),
                               borderRadius: BorderRadius.circular(10.0),
                             ),
                             focusedErrorBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.redAccent),
+                              borderSide: const BorderSide(
+                                color: Colors.redAccent,
+                              ),
                               borderRadius: BorderRadius.circular(10.0),
                             ),
                             suffixIcon: Icon(
@@ -374,9 +313,61 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             (error, stackTrace) => Center(
               child: Text(
                 'Error fetching profile: $error',
-                style: TextStyle(color: Colors.red),
+                style: const TextStyle(color: Colors.red),
               ),
             ),
+      ),
+    );
+  }
+
+  InputDecorator Dropdown() {
+    return InputDecorator(
+      decoration: InputDecoration(
+        labelText: 'Gender',
+        labelStyle: GoogleFonts.poppins(color: Colors.grey.shade600),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey.shade400),
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.blue.shade700),
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey.shade400),
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Colors.red),
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Colors.redAccent),
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+      ),
+      child: DropdownButtonFormField<String>(
+        value:
+            _selectedGender
+                ?.toLowerCase(), // Convert selected gender to lowercase
+        items:
+            _genderOptions.map((String value) {
+              return DropdownMenuItem<String>(
+                value: value.toLowerCase(), // Convert item value to lowercase
+                child: Text(value, style: GoogleFonts.poppins()),
+              );
+            }).toList(),
+        onChanged:
+            _isEditing
+                ? (String? newValue) {
+                  setState(() {
+                    _selectedGender =
+                        newValue?.toLowerCase(); // Update with lowercase
+                  });
+                }
+                : null,
+        // ... other properties
       ),
     );
   }

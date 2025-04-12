@@ -6,7 +6,7 @@ import 'package:likhlo/Utils/Model/SupplierModel.dart'; // Ensure correct import
 import 'package:likhlo/Utils/Provider/CustomerProvider.dart';
 import 'package:likhlo/Utils/Provider/SupplierProvider.dart';
 import 'package:likhlo/Views/Data/Customer/Edit/EditScreen.dart';
-import 'package:likhlo/Views/Data/Customer/Edit/EditSup.dart';
+import 'package:likhlo/Views/Data/Supplier/Edit/EditSup.dart';
 
 class SupplierCard extends ConsumerWidget {
   final Supplier supplier;

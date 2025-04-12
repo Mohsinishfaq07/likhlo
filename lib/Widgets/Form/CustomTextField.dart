@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:likhlo/Utils/Textstyle/Textstyle.dart';
 
 class CustomTextField extends StatelessWidget {
   final String label;
@@ -84,4 +85,11 @@ class CustomTextField extends StatelessWidget {
       ),
     );
   }
+}
+
+ListTile title(String label, IconData icon) {
+  return ListTile(
+    title: Text(label, style: AppStyle(15, FontWeight.bold, Colors.black)),
+    trailing: Icon(icon, color: Colors.blue),
+  );
 }

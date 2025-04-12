@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:likhlo/Utils/Provider/SupplierProvider.dart';
-import 'package:likhlo/Views/Data/Add/AddSupp.dart';
+import 'package:likhlo/Views/Data/Supplier/Add/AddSupp.dart';
 import 'package:likhlo/Widgets/Button/GivenorTakenButton.dart';
 import 'package:likhlo/Widgets/Cards/Cards.dart';
 import 'package:likhlo/Widgets/Searchbar/Suppsearchbar.dart'; // Assuming you have a SupplierProvider
